@@ -46,7 +46,7 @@ supports ray tracing and global illumination.
 
 In contrast, other shading languages usually compute just a surface
 color as visible from a particular direction.  These old shaders are
-"black boxes" that a renderer can do little with but execute to for
+"black boxes" that a renderer can do little with but execute to find
 this once piece of information (for example, there is no effective way
 to discover from them which directions are important to sample).
 Furthermore, the physical units of lights and surfaces are often
@@ -89,7 +89,7 @@ Sometimes it is desirable to output images containing individual
 lighting components such as specular, diffuse, reflection, individual
 lights, etc.  In other languages, this is usually accomplished by
 adding a plethora of "output variables" to the shaders that collect
-these invididual quantities.
+these individual quantities.
 
 OSL shaders need not be cluttered with any code or output variables to
 accomplish this.  Instead, there is a regular-expression-based
@@ -164,7 +164,7 @@ OK, here's the straight dope:
 
 At Sony Pictures Imageworks, OSL has been integrated into our renderer
 and pipeline, the Shading department has recoded nearly all the facility
-shaders in OSL and is approching full functionality of the shader
+shaders in OSL and is approaching full functionality of the shader
 library, and multiple shows are now doing early look development with
 OSL.
 
@@ -197,7 +197,7 @@ no longer be issues:
 
   * Our set of sample shaders is quite anemic.  We will eventually have a more extensive set of useful shaders.
 
-  * The code that implements "light path expressions" is currently missing from the OSL libraries.  We naively thought at first that this was a renderer feature and implemented it on the wrong side of the boundary between our renderer and OSL.  We will rectify that, moving the code into the public OSL library so that other renderers can use the same light expressions without needing to reimplement it.
+  * The code that implements "light path expressions" is currently missing from the OSL libraries.  We naively thought at first that this was a renderer feature and implemented it on the wrong side of the boundary between our renderer and OSL.  We will rectify that, moving the code into the public OSL library so that other renderers can use the same light expressions without needing to re-implement it.
 
   * Performance issues -- OSL shaders currently execute 2-10 times slower than the equivalent shader written in optimized C (our goal is to achieve parity with our old C shaders).  This is simply due to having just started optimization; We're making rapid progress -- a month ago we were 100-200x slower than C -- and there are multiple obvious optimizations we are working on that we are confident will achieve our performance goals within the next several weeks.
 
