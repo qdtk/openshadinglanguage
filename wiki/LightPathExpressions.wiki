@@ -150,31 +150,29 @@ And suddenly the reflection of the lamp and others disappear ...
 
 ===Mapping regexps to AOV's===
 
-Now you can map any valid regular expression to any AOV that you have defined. So in your options node you may have something like this:
+Now you can map any valid regular expression to any AOV that you have defined. So you may issue renderer commands like this:
 
 {{{
-outputs 2 1 STRING "beauty  RGBA filter testrender"
-                   "diffuse RGBA filter diffrender"
-osl_path_regexps 2 1 STRING "beauty  RGBA C[SGs]*D*<Ts>*L"
-                            "diffuse RGBA CD+L"
+    Output ("beauty.tif", "rgb", "C[SGs]*D*<Ts>*L");
+    Output ("diffuse.tif", "rgb", "CD+L");
 }}}
 
-So the osl_path_regexps string option takes an AOV (name and type) and directs the next given regexp to it. You can actually map several regexps to the same AOV like this:
+N.B.: For illustration, we are assuming a renderer command Output(filename, format, data-regex...), and that any number of these commands may be issued to give multiple outputs.  We will continue to use this notation in the remaining examples.
+
+Let's extend our notation so that multiple regexps can be directed to the same output, like this:
 
 {{{
-osl_path_regexps 2 1 STRING "diffuse RGBA CDDL"
-                            "diffuse RGBA CDL"
+    Output ("diffuse.tif", "rgb", "CDDL", "CDL");
 }}}
 
 And in this case we are accumulating in diffuse only direct lighting and one bounce diffuse indirect lighting. This one is actually equivalent to this single regexp setup:
 
 {{{
-osl_path_regexps 1 1 STRING "diffuse RGBA CD{1,2}L"
+    Output ("diffuse.tif", "rgb", "CD{1,2}L");
 }}}
 
-But for convenience and clarity in your configurations, you can add as many components to the same AOV as you want by just adding lines there.
 
-Using regexps to produce an alpha channel
+===Using regexps to produce an alpha channel===
 
 There is no specific alpha output in the new OSL integrator, but you can easily produce one. And actually the default rules set it up for you, but let's see how it works. You had seen in the label listing that we have something called B (Background). This is a special source of "light", but don't get confused, it is not the fully shaded background (which is presented as L, a normal light). This is a special source that always give 1.0 values, so we can compute an image of the visibility of the background. and it will be independent of what it is actually showing up behind objects. Take a look at this picture:
 
@@ -183,7 +181,7 @@ There is no specific alpha output in the new OSL integrator, but you can easily 
 So let's say you want to get the visibility of the background. No need for color so we setup a FLOAT AOV and map this regular expression to it:
 
 {{{
-osl_path_regexps 1 1 STRING "vis FLOAT C<Ts>*B"
+    Output ("vis.tif", "float", "C<Ts>*B");
 }}}
 
 Note the expression, we are saying here that we want anything that goes transmitted in a straight direction (transparency) and touches the background. You could add standard refractions here by adding the S label ored with s. But this will be the most typical setup. This gives us this image:
@@ -192,8 +190,10 @@ Note the expression, we are saying here that we want anything that goes transmit
 
 But the alpha channel we want is acually the negative of this one. You could do that in postproduction, but we provide a way to modify a rule so it outputs the negative by prepending the expression with the exclamation mark {{{"!"}}}. So if you try this expression:
 
+{{{
+    Output ("vis.tif", "float", "!C<Ts>*B");
+}}}
 
-{{{osl_path_regexps 1 1 STRING "vis FLOAT !C<Ts>*B"}}}
 
 The image you will get is this one:
 
@@ -201,8 +201,9 @@ The image you will get is this one:
 
 Good, you got your alpha channel as a separate AOV, but what if you want to put it in the actual alpha channel of an RGBA AOV? You can do that by appending your expression to the standard rgb expression for an AOV. Look at this example:
 
-
-{{{osl_path_regexps 1 1 STRING "RGBA RGBA C[SGs]*D*<Ts>*L !C<Ts>*B"}}}
+{{{
+    Output ("beauty.tif", "rgba", "C[SGs]*D*<Ts>*L !C<Ts>*B");
+}}}
 
 We first write a "beauty" expression for the color component and then another one that will be mapped to the alpha channel and voila!
 
@@ -269,11 +270,9 @@ surface matte (float Kd = 1, color Cs = 1, string label = "foo")
 The only new thing is that we have a label parameter that is going to be passed directly to the closure. That's assigning the tag to the diffuse term, which is the only one here. That allows us to create the shader in the ass file like this:
 
 {{{
-osl_shader
-{
-  name green
-  commands "color Cs 0.1 1 0.1; string label greenwall; shader matte green_layer"
-}
+    Parameter ("Cs", color(0.1, 1, 0.1));
+    Parameter ("label", "greenwall");
+    Shader ("surface", "matte", "green_layer");
 }}}
 
 So we give the label "greenwall". This goes obviously to the green wall of the image. We can also do the same for the light shader:
@@ -288,22 +287,22 @@ surface emitter (float Ke = 1, color Cs = 1, string label = "foo")
 And then instantiate two light shaders for or two quad emitters on the ceiling like this:
 
 {{{
-osl_shader
-{
-  name emission1
-  commands "float Ke 100; string label light1; shader emitter light_layer"
-}
-osl_shader
-{
-  name emission2
-  commands "float Ke 100; string label light2; shader emitter light_layer"
-}
+    Parameter ("Ke", 100.0);
+    Parameter ("label", "light1");
+    Shader ("surface", "emitter");
+
+    ...
+
+    Parameter ("Ke", 100.0);
+    Parameter ("label", "light2");
+    Shader ("surface", "emitter");
 }}}
+    
 
 With light1 being the one in the left side and light2 on the right side. So now we are ready to test this custom label filtering with regular expressions. We could ask for all the light being reflected by the greenwall once and then bounced on any other surface. This would be the regexp:
 
 {{{
- osl_path_regexps 2 1 STRING "RGB RGB CD*'greenwall'L"
+    Output ("beauty.tif", "rgb", "CD*'greenwall'L");
 }}}
 
 
@@ -314,7 +313,7 @@ And this is the image you get:
 But maybe you just want the light directly reflected by the green wall (no inter-object light), and say you just need the light2 for it (the one which lays to the right side). So you won't get as much energy as in the original. This would be the setup:
 
 {{{
- osl_path_regexps 2 1 STRING "RGB RGB C'greenwall''light2'"
+    Output ("beauty.tif", "rgb", "C'greenwall''light2'");
 }}}
 
 And this would be the result:
@@ -324,7 +323,7 @@ And this would be the result:
 Or we could try to get all the light in diffuse surfaces being reflected by the red wall, but not that directly reflected by it (so the red wall won't show up). This is the setup for that, note the {{{"[^'redwall']+"}}} that forces at least one reflector which is not tagged as "redwall":
 
 {{{
- osl_path_regexps 2 1 STRING "RGB RGB C[^'redwall']+'redwall'L"
+    Output ("beauty.tif", "rgb", "C[^'redwall']+'redwall'L");
 }}}
 
 And this is what you get:
