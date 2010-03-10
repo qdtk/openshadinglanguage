@@ -1,0 +1,8 @@
+  * Shader profiling, a special run mode that tells you which shaders (and which lines of those shaders) are most expensive.
+  * A prototype shader debugger, that would let you step through shaders a line at a time.
+  * Translation of OSL to or from other interesting shading languages.
+  * Writing example shaders for all sorts of useful materials
+  * New closures for published BSDFs we haven't gotten around to.
+  * A test program that is better that our "testshade" (which is totally lame, just shades a flat square, with no lights).  An alternate test program that shades a sphere on a plane, with a light, and working integrator code (ours is on the Arnold side, not on the OSL side) would be immensely helpful and also provide a better example of how to integrate OSL into renderers.
+  * Translation of compiled OSL to "close as possible" code in any hardware-oriented language (GLSL, Cg, Cuda, OpenCL, etc.).
+  * Translation of our bytecode into LLVM intermediate code (that unlocks all sorts of possibilities).
