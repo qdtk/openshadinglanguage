@@ -1,4 +1,13 @@
-  * Shader profiling, a special run mode that tells you which shaders (and which lines of those shaders) are most expensive.
+= Info page for Google Summer of Code =
+
+---
+
+== Ideas for projects to work on ==
+
+====Shader profiling====
+
+, a special run mode that tells you which shaders (and which lines of those shaders) are most expensive.
+
   * A prototype shader debugger, that would let you step through shaders a line at a time.
   * Translation of OSL to or from other interesting shading languages.
   * Writing example shaders for all sorts of useful materials
