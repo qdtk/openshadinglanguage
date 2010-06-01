@@ -1,0 +1,44 @@
+shader
+test ()
+{
+    {
+        float a = 0.1, b = 0.2, c = 0.5;
+        printf ("  point (%g, %g, %g) = %g\n", a, b, c, point(a,b,c));
+        printf ("  vector (%g, %g, %g) = %g\n", a, b, c, vector(a,b,c));
+        printf ("  normal (%g, %g, %g) = %g\n", a, b, c, normal(a,b,c));
+    }
+
+    {
+        printf (" varying:\n");
+        float a = u;
+        float b = 1.0 + v;
+        float c = 0.5;
+
+        printf ("  point (%g, %g, %g) = %g\n", a, b, c, point(a,b,c));
+        printf ("  vector (%g, %g, %g) = %g\n", a, b, c, vector(a,b,c));
+        printf ("  normal (%g, %g, %g) = %g\n", a, b, c, normal(a,b,c));
+    }
+
+    { 
+        float a = 1, b = 1, c = 0;
+        printf ("\ntesting with spaces:\n");
+        printf ("  point (\"shader\", %g, %g, %g) = %g\n",
+                a, b, c, point("shader",a,b,c));
+        printf ("  vector (\"shader\", %g, %g, %g) = %g\n",
+                a, b, c, vector("shader",a,b,c));
+        printf ("  normal (\"shader\", %g, %g, %g) = %g\n",
+                a, b, c, normal("shader",a,b,c));
+        printf ("  point (\"object\", %g, %g, %g) = %g\n",
+                a, b, c, point("object",a,b,c));
+        printf ("  vector (\"object\", %g, %g, %g) = %g\n",
+                a, b, c, vector("object",a,b,c));
+        printf ("  normal (\"object\", %g, %g, %g) = %g\n",
+                a, b, c, normal("object",a,b,c));
+        printf ("  point (\"myspace\", %g, %g, %g) = %g\n",
+                a, b, c, point("myspace",a,b,c));
+        printf ("  vector (\"myspace\", %g, %g, %g) = %g\n",
+                a, b, c, vector("myspace",a,b,c));
+        printf ("  normal (\"myspace\", %g, %g, %g) = %g\n",
+                a, b, c, normal("myspace",a,b,c));
+    }
+}
