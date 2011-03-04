@@ -1,0 +1,28 @@
+shader
+test ()
+{
+    // Sanity tests
+    int nonzero = 7;
+    int zero = 0;
+    if (nonzero)
+        printf ("1-clause uniform if %d:  Should print this\n", nonzero);
+    if (zero)
+        printf ("1-clause uniform if %d:  Should NOT NOT NOT print this!\n", zero);
+
+
+    if (nonzero)
+        printf ("2-clause uniform if %d:  true - Should print this\n", nonzero);
+    else 
+        printf ("2-clause uniform if %d:  false - Should NOT NOT NOT print this!\n", nonzero);
+    if (zero)
+        printf ("2-clause uniform if %d:  true - Should NOT NOT NOT print this!\n", zero);
+    else
+        printf ("2-clause uniform if %d:  false - Should print this\n", zero);
+
+    printf ("Test varying if:\n");
+    if (u < v) {
+        printf ("u less than v: %g < %g\n", u, v);
+    } else {
+        printf ("u greater or equal than v: %g >= %g\n", u, v);
+    }
+}

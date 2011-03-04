@@ -1,0 +1,14 @@
+dist
+build
+*.aux
+*.adx
+*.ind
+*.log
+*.out
+*.toc
+*.idx
+*.ilg
+*~
+\#*\#
+*.pyc
+testsuite/*/*.oso
